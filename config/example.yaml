@@ -1,0 +1,22 @@
+db:
+  host: localhost
+  port: 3306
+  username: root
+  password: 12345678
+  dbname: melody_cure
+  charset: utf8mb4
+  parseTime: true
+  loc: Local
+
+redis:
+  host: localhost
+  port: 6379
+  password: "12345678"
+  db: 0
+
+JWT:
+  secretKey: "xxx"
+
+Email:
+  email: "xxx@xxx"
+  key: "xxx"
