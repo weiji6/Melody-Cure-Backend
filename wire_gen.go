@@ -34,12 +34,12 @@ type App struct {
 	Engine *gin.Engine
 }
 
-func ProvideJwtClient() middleware.JwtClient {
-	return middleware.JwtClient{SecretKey: viper.GetString("JWT.secretKey")}
+func ProvideJwtClient() *middleware.JwtClient {
+	return &middleware.JwtClient{SecretKey: viper.GetString("JWT.secretKey")}
 }
 
-func ProvideUserService(jwt middleware.JwtClient) service.UserService {
-	return service.NewUser(DAO.User{}, jwt)
+func ProvideUserService(jwt *middleware.JwtClient) service.UserService {
+	return service.NewUser(DAO.NewUserDAO(DAO.DB), jwt)
 }
 
 func ProvideUserController(svc service.UserService) *controller.User {
