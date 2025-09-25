@@ -1,0 +1,1159 @@
+definitions:
+  DAO.AICompanion:
+    properties:
+      avatar:
+        type: string
+      companion_type:
+        description: 类似抖音小火人/王者灵主
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      personality:
+        description: 性格设定
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/DAO.User'
+      user_id:
+        type: string
+      voice_type:
+        type: string
+    type: object
+  DAO.Certification:
+    properties:
+      certificate_name:
+        type: string
+      certificate_no:
+        type: string
+      certificate_type:
+        description: 机构认证/康复师认证
+        type: string
+      created_at:
+        type: string
+      expiry_date:
+        type: string
+      id:
+        type: string
+      issue_date:
+        type: string
+      issuing_authority:
+        type: string
+      review_notes:
+        type: string
+      status:
+        description: pending, approved, rejected
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/DAO.User'
+      user_id:
+        type: string
+    type: object
+  DAO.ChildArchive:
+    properties:
+      avatar:
+        type: string
+      birth_date:
+        type: string
+      child_name:
+        type: string
+      condition:
+        description: 病情描述
+        type: string
+      created_at:
+        type: string
+      diagnosis:
+        description: 诊断结果
+        type: string
+      gender:
+        type: string
+      id:
+        type: string
+      notes:
+        description: 备注
+        type: string
+      progress:
+        description: 康复进展
+        type: string
+      treatment:
+        description: 治疗方案
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/DAO.User'
+      user_id:
+        description: 家长ID
+        type: string
+    type: object
+  DAO.Course:
+    properties:
+      category:
+        type: string
+      content:
+        description: 课程内容
+        type: string
+      cover_image:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      duration:
+        description: 课程时长(分钟)
+        type: integer
+      id:
+        type: string
+      is_free:
+        type: boolean
+      level:
+        description: 初级/中级/高级
+        type: string
+      price:
+        type: number
+      status:
+        description: published, draft
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+      video_url:
+        type: string
+      view_count:
+        type: integer
+    type: object
+  DAO.Game:
+    properties:
+      age_range:
+        description: 适用年龄段
+        type: string
+      benefits:
+        description: 训练效果
+        type: string
+      category:
+        description: 认知训练/感统训练等
+        type: string
+      cover_image:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      difficulty:
+        description: 难度等级
+        type: string
+      game_url:
+        type: string
+      id:
+        type: string
+      instructions:
+        description: 游戏说明
+        type: string
+      play_count:
+        type: integer
+      rating:
+        type: number
+      status:
+        description: published, draft
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  DAO.User:
+    properties:
+      address:
+        type: string
+      certificate:
+        type: string
+      certification:
+        type: boolean
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      identity:
+        description: 身份类型
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  DAO.UserFavorite:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      resource_id:
+        type: string
+      resource_type:
+        description: course, game, article
+        type: string
+      user:
+        $ref: '#/definitions/DAO.User'
+      user_id:
+        type: string
+    type: object
+  DAO.VirtualTherapist:
+    properties:
+      avatar:
+        type: string
+      created_at:
+        type: string
+      experience:
+        description: 经验年限
+        type: integer
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      specialization:
+        description: 专业特长
+        type: string
+      therapist_type:
+        description: 专业领域
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/DAO.User'
+      user_id:
+        type: string
+    type: object
+  request.AICompanionRequest:
+    properties:
+      avatar:
+        type: string
+      companion_type:
+        type: string
+      name:
+        type: string
+      personality:
+        type: string
+      voice_type:
+        type: string
+    required:
+    - companion_type
+    - name
+    type: object
+  request.CertificationRequest:
+    properties:
+      certificate_name:
+        type: string
+      certificate_no:
+        type: string
+      certificate_type:
+        description: 机构认证/康复师认证
+        type: string
+      expiry_date:
+        type: string
+      issue_date:
+        type: string
+      issuing_authority:
+        type: string
+    required:
+    - certificate_name
+    - certificate_no
+    - certificate_type
+    - issue_date
+    - issuing_authority
+    type: object
+  request.ChildArchiveRequest:
+    properties:
+      avatar:
+        type: string
+      birth_date:
+        type: string
+      child_name:
+        type: string
+      condition:
+        type: string
+      diagnosis:
+        type: string
+      gender:
+        type: string
+      notes:
+        type: string
+      progress:
+        type: string
+      treatment:
+        type: string
+    required:
+    - birth_date
+    - child_name
+    - gender
+    type: object
+  request.FavoriteRequest:
+    properties:
+      resource_id:
+        type: string
+      resource_type:
+        description: course, game, article
+        type: string
+    required:
+    - resource_id
+    - resource_type
+    type: object
+  request.LoginRequest:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - name
+    - password
+    type: object
+  request.Register:
+    properties:
+      email:
+        type: string
+      identity:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  request.UpdateProfileRequest:
+    properties:
+      address:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  request.VirtualTherapistRequest:
+    properties:
+      avatar:
+        type: string
+      experience:
+        type: integer
+      name:
+        type: string
+      specialization:
+        type: string
+      therapist_type:
+        type: string
+    required:
+    - name
+    - therapist_type
+    type: object
+  response.ErrorResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  response.SuccessResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/course/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 根据ID获取课程详情
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/DAO.Course'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 获取课程详情
+      tags:
+      - 内容管理
+  /api/courses:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有课程列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/DAO.Course'
+                  type: array
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 获取课程列表
+      tags:
+      - 内容管理
+  /api/game/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 根据ID获取游戏详情
+      parameters:
+      - description: 游戏ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/DAO.Game'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 获取游戏详情
+      tags:
+      - 内容管理
+  /api/games:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有游戏列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/DAO.Game'
+                  type: array
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 获取游戏列表
+      tags:
+      - 内容管理
+  /api/user/ai-companion:
+    post:
+      consumes:
+      - application/json
+      description: 创建AI陪伴角色
+      parameters:
+      - description: AI陪伴创建请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.AICompanionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/DAO.AICompanion'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 创建AI陪伴
+      tags:
+      - AI陪伴
+  /api/user/ai-companions:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户的AI陪伴列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/DAO.AICompanion'
+                  type: array
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 获取AI陪伴列表
+      tags:
+      - AI陪伴
+  /api/user/certification:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户认证状态
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/DAO.Certification'
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 获取认证状态
+      tags:
+      - 认证管理
+    post:
+      consumes:
+      - application/json
+      description: 用户申请专业认证
+      parameters:
+      - description: 认证申请请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CertificationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 申请成功
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 申请认证
+      tags:
+      - 认证管理
+  /api/user/child-archive:
+    post:
+      consumes:
+      - application/json
+      description: 创建儿童档案
+      parameters:
+      - description: 儿童档案创建请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ChildArchiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/DAO.ChildArchive'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 创建儿童档案
+      tags:
+      - 儿童档案管理
+  /api/user/child-archive/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除儿童档案
+      parameters:
+      - description: 档案ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 删除儿童档案
+      tags:
+      - 儿童档案管理
+    put:
+      consumes:
+      - application/json
+      description: 更新儿童档案信息
+      parameters:
+      - description: 档案ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 儿童档案更新请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ChildArchiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 更新儿童档案
+      tags:
+      - 儿童档案管理
+  /api/user/child-archives:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户的儿童档案列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/DAO.ChildArchive'
+                  type: array
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 获取儿童档案列表
+      tags:
+      - 儿童档案管理
+  /api/user/favorite:
+    delete:
+      consumes:
+      - application/json
+      description: 从收藏夹移除内容
+      parameters:
+      - description: 收藏移除请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.FavoriteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 移除成功
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 移除收藏
+      tags:
+      - 收藏管理
+    post:
+      consumes:
+      - application/json
+      description: 添加内容到收藏夹
+      parameters:
+      - description: 收藏请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.FavoriteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 添加成功
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 添加收藏
+      tags:
+      - 收藏管理
+  /api/user/favorites:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户的收藏列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/DAO.UserFavorite'
+                  type: array
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 获取收藏列表
+      tags:
+      - 收藏管理
+  /api/user/login:
+    post:
+      consumes:
+      - application/json
+      description: 用户登录接口
+      parameters:
+      - description: 登录请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功，返回token
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: 用户名或密码错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 用户登录
+      tags:
+      - 用户管理
+  /api/user/logout:
+    post:
+      consumes:
+      - application/json
+      description: 用户登出，使token失效
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登出成功
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 用户登出
+      tags:
+      - 用户管理
+  /api/user/password:
+    put:
+      consumes:
+      - application/json
+      description: 用户修改登录密码
+      parameters:
+      - description: 修改密码请求
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            new_password:
+              type: string
+            old_password:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 密码修改成功
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: 未认证
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 修改密码
+      tags:
+      - 用户管理
+  /api/user/profile:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户个人信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/DAO.User'
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 获取个人信息
+      tags:
+      - 用户管理
+    put:
+      consumes:
+      - application/json
+      description: 更新用户个人信息
+      parameters:
+      - description: 更新信息请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 更新个人信息
+      tags:
+      - 用户管理
+  /api/user/register:
+    post:
+      consumes:
+      - application/json
+      description: 用户注册接口
+      parameters:
+      - description: 注册请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.Register'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 注册成功
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 用户注册
+      tags:
+      - 用户管理
+  /api/user/virtual-therapist:
+    post:
+      consumes:
+      - application/json
+      description: 创建虚拟疗愈导师
+      parameters:
+      - description: 虚拟疗愈导师创建请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.VirtualTherapistRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/DAO.VirtualTherapist'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 创建虚拟疗愈导师
+      tags:
+      - 虚拟疗愈导师
+  /api/user/virtual-therapists:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户的虚拟疗愈导师列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/DAO.VirtualTherapist'
+                  type: array
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: 获取虚拟疗愈导师列表
+      tags:
+      - 虚拟疗愈导师
+swagger: "2.0"
