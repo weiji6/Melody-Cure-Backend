@@ -561,30 +561,47 @@ db.AutoMigrate(
 
 ### Docker 部署 (推荐)
 
-#### 开发环境部署
+#### 使用服务器现有的 MySQL 和 Redis
+
+如果你的服务器已经安装了 MySQL 和 Redis，可以使用以下方式部署：
+
+**方式一：使用 host 网络模式 (推荐)**
+```bash
+# 使用简化版配置，直接访问宿主机服务
+docker-compose -f docker-compose.simple.yml up -d
+
+# 查看服务状态
+docker-compose -f docker-compose.simple.yml ps
+
+# 查看日志
+docker-compose -f docker-compose.simple.yml logs -f backend
+```
+
+**方式二：使用桥接网络模式**
+```bash
+# 修改 docker-compose.yml 中的数据库和Redis连接配置
+# 将 DB_HOST 和 REDIS_HOST 改为服务器的实际IP地址
+docker-compose up -d
+```
+
+#### 开发环境部署 (包含所有服务)
+如果需要完整的开发环境，包括 MySQL 和 Redis 容器：
+
 1. 克隆项目
 ```bash
 git clone <repository-url>
 cd Melody-Cure-Backend
 ```
 
-2. 启动服务
+2. 使用完整版配置启动
 ```bash
-# 使用 docker-compose 启动所有服务
-docker-compose up -d
-
-# 查看服务状态
-docker-compose ps
-
-# 查看日志
-docker-compose logs -f backend
+# 恢复 MySQL 和 Redis 容器配置后使用
+# docker-compose up -d
 ```
 
 3. 访问服务
 - API 服务: http://localhost:8080
 - Swagger 文档: http://localhost:8080/swagger/index.html
-- MySQL: localhost:3306
-- Redis: localhost:6379
 
 #### 生产环境部署
 1. 配置环境变量
@@ -645,28 +662,76 @@ go run main.go
 ```
 
 ### Docker 命令参考
+
+#### 使用服务器现有 MySQL/Redis 的命令
+```bash
+# 使用简化版配置 (推荐)
+docker-compose -f docker-compose.simple.yml up -d
+docker-compose -f docker-compose.simple.yml down
+docker-compose -f docker-compose.simple.yml logs -f backend
+docker-compose -f docker-compose.simple.yml restart backend
+
+# 使用标准配置 (需要修改连接地址)
+docker-compose up -d
+docker-compose down
+docker-compose logs -f backend
+docker-compose restart backend
+```
+
+#### 生产环境命令
+```bash
+# 生产环境部署
+docker-compose -f docker-compose.prod.yml up -d
+docker-compose -f docker-compose.prod.yml down
+docker-compose -f docker-compose.prod.yml logs -f backend
+docker-compose -f docker-compose.prod.yml restart nginx
+```
+
+#### 通用命令
 ```bash
 # 构建镜像
 docker-compose build
 
-# 启动服务
-docker-compose up -d
-
-# 停止服务
-docker-compose down
-
-# 查看日志
-docker-compose logs -f [service_name]
-
 # 进入容器
 docker-compose exec backend sh
-docker-compose exec mysql mysql -u melody_cure -p
 
-# 重启服务
-docker-compose restart [service_name]
+# 查看容器状态
+docker ps
 
-# 清理数据
-docker-compose down -v  # 删除数据卷
+# 查看镜像
+docker images
+```
+
+### 数据库准备
+
+由于使用服务器现有的 MySQL 和 Redis，需要手动准备数据库：
+
+#### MySQL 数据库设置
+```sql
+-- 连接到 MySQL
+mysql -u root -p
+
+-- 创建数据库
+CREATE DATABASE IF NOT EXISTS melody_cure CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- 创建用户并授权
+CREATE USER IF NOT EXISTS 'melody_cure'@'%' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON melody_cure.* TO 'melody_cure'@'%';
+FLUSH PRIVILEGES;
+
+-- 设置时区
+SET time_zone = '+08:00';
+```
+
+#### Redis 设置
+确保 Redis 服务正在运行，并且如果设置了密码，请在环境变量中正确配置。
+
+```bash
+# 检查 Redis 状态
+redis-cli ping
+
+# 如果有密码
+redis-cli -a your_password ping
 ```
 
 ### Docker 部署
