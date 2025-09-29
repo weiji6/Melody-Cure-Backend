@@ -12,6 +12,7 @@ import (
 	"melody_cure/DAO"
 	"melody_cure/controller"
 	"melody_cure/middleware"
+	"melody_cure/routes"
 	"melody_cure/service"
 )
 
@@ -21,7 +22,12 @@ func InitializeApp() (*App, error) {
 	jwtClient := ProvideJwtClient()
 	userService := ProvideUserService(jwtClient)
 	user := ProvideUserController(userService)
-	engine := ProvideEngine(user)
+	imageService := ProvideImageService()
+	imageController := ProvideImageController(imageService)
+	healingLogDAO := ProvideHealingLogDAO()
+	healingLogService := ProvideHealingLogService(healingLogDAO)
+	healingLogController := ProvideHealingLogController(healingLogService)
+	engine := ProvideEngine(user, imageController, healingLogController, jwtClient)
 	app := &App{
 		Engine: engine,
 	}
@@ -46,11 +52,31 @@ func ProvideUserController(svc service.UserService) *controller.User {
 	return controller.NewUserController(svc)
 }
 
-func ProvideEngine(uc *controller.User) *gin.Engine {
-	r := gin.Default()
+func ProvideImageService() *service.ImageService {
+	return service.NewImageService()
+}
 
-	r.POST("/api/user/register", uc.Register)
-	r.POST("/api/user/login", uc.Login)
+func ProvideImageController(imageService *service.ImageService) *controller.ImageController {
+	return controller.NewImageController(imageService)
+}
+
+func ProvideHealingLogDAO() *DAO.HealingLogDAO {
+	return DAO.NewHealingLogDAO(DAO.DB)
+}
+
+func ProvideHealingLogService(healingLogDAO *DAO.HealingLogDAO) *service.HealingLogService {
+	return service.NewHealingLogService(healingLogDAO)
+}
+
+func ProvideHealingLogController(healingLogService *service.HealingLogService) *controller.HealingLogController {
+	return controller.NewHealingLogController(healingLogService)
+}
+
+func ProvideEngine(uc *controller.User, ic *controller.ImageController, hlc *controller.HealingLogController, jwt *middleware.JwtClient) *gin.Engine {
+	r := gin.Default()
+	routes.SetupUserRoutes(r, uc, jwt)
+	routes.SetupImageRoutes(r, ic, jwt)
+	routes.SetupHealingLogRoutes(r, hlc, jwt)
 
 	return r
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"melody_cure/config"
+	"melody_cure/model"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -27,7 +28,29 @@ func NewData() {
 	}
 	DB = db
 
+	// 自动迁移数据库表
+	if err := AutoMigrate(db); err != nil {
+		panic("数据库迁移失败: " + err.Error())
+	}
+
 	RDB = NewRedis()
+}
+
+// AutoMigrate 自动迁移数据库表
+func AutoMigrate(db *gorm.DB) error {
+	return db.AutoMigrate(
+		&User{},
+		&Certification{},
+		&AICompanion{},
+		&VirtualTherapist{},
+		&ChildArchive{},
+		&UserFavorite{},
+		&Course{},
+		&Game{},
+		&model.ImageToken{}, // 图床token表
+		&model.HealingLog{}, // 疗愈日志表
+		&model.LogMedia{},   // 日志媒体表
+	)
 }
 
 func NewDB() (*gorm.DB, error) {
