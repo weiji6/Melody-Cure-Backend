@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # MySQL 数据库
+  mysql:
+    image: mysql:8.0
+    container_name: melody_cure_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_DATABASE: melody_cure
+      MYSQL_USER: melody_cure
+      MYSQL_PASSWORD: 12345678
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - melody_cure_network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: melody_cure_redis
+    restart: always
+    command: redis-server --requirepass 12345678
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - melody_cure_network
+
+  # 后端应用
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: melody_cure_backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=melody_cure
+      - DB_PASSWORD=12345678
+      - DB_NAME=melody_cure
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=12345678
+      - JWT_SECRET=your_jwt_secret_key_here
+      - QINIU_ACCESS_KEY=your_qiniu_access_key
+      - QINIU_SECRET_KEY=your_qiniu_secret_key
+      - QINIU_BUCKET=your_bucket_name
+      - QINIU_DOMAIN=your_domain.com
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - melody_cure_network
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  melody_cure_network:
+    driver: bridge

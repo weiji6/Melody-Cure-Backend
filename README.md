@@ -553,6 +553,122 @@ db.AutoMigrate(
 
 ## 部署
 
+### 环境要求
+- Go 1.21+
+- MySQL 8.0+
+- Redis 6.0+
+- Docker & Docker Compose (推荐)
+
+### Docker 部署 (推荐)
+
+#### 开发环境部署
+1. 克隆项目
+```bash
+git clone <repository-url>
+cd Melody-Cure-Backend
+```
+
+2. 启动服务
+```bash
+# 使用 docker-compose 启动所有服务
+docker-compose up -d
+
+# 查看服务状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f backend
+```
+
+3. 访问服务
+- API 服务: http://localhost:8080
+- Swagger 文档: http://localhost:8080/swagger/index.html
+- MySQL: localhost:3306
+- Redis: localhost:6379
+
+#### 生产环境部署
+1. 配置环境变量
+```bash
+cp .env.example .env
+# 编辑 .env 文件，配置生产环境的密码和密钥
+```
+
+2. 启动生产环境
+```bash
+# 使用生产环境配置启动
+docker-compose -f docker-compose.prod.yml up -d
+
+# 查看服务状态
+docker-compose -f docker-compose.prod.yml ps
+```
+
+3. SSL 配置 (可选)
+```bash
+# 将 SSL 证书放入 ssl 目录
+mkdir ssl
+cp your-cert.pem ssl/cert.pem
+cp your-key.pem ssl/key.pem
+
+# 编辑 nginx.conf 启用 HTTPS 配置
+# 重启 nginx 服务
+docker-compose -f docker-compose.prod.yml restart nginx
+```
+
+### 传统部署
+
+#### 部署步骤
+1. 克隆项目
+```bash
+git clone <repository-url>
+cd Melody-Cure-Backend
+```
+
+2. 配置环境变量
+```bash
+cp config/example.yaml config/config.yaml
+# 编辑 config/config.yaml 文件，配置数据库、Redis、JWT等信息
+```
+
+3. 安装依赖
+```bash
+go mod download
+```
+
+4. 运行数据库迁移
+```bash
+go run main.go
+```
+
+5. 启动服务
+```bash
+go run main.go
+```
+
+### Docker 命令参考
+```bash
+# 构建镜像
+docker-compose build
+
+# 启动服务
+docker-compose up -d
+
+# 停止服务
+docker-compose down
+
+# 查看日志
+docker-compose logs -f [service_name]
+
+# 进入容器
+docker-compose exec backend sh
+docker-compose exec mysql mysql -u melody_cure -p
+
+# 重启服务
+docker-compose restart [service_name]
+
+# 清理数据
+docker-compose down -v  # 删除数据卷
+```
+
 ### Docker 部署
 
 ```dockerfile
