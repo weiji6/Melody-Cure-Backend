@@ -2,6 +2,7 @@ package DAO
 
 import (
 	"melody_cure/model"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -46,4 +47,21 @@ func (dao *HealingLogDAO) DeleteHealingLog(logID uint) error {
 		return err
 	}
 	return tx.Commit().Error
+}
+
+// GetHealingLogsByChildIDWithDateFilter 获取指定儿童的疗愈日志，支持日期筛选
+func (dao *HealingLogDAO) GetHealingLogsByChildIDWithDateFilter(childID uint, startDate, endDate *time.Time) ([]model.HealingLog, error) {
+	var logs []model.HealingLog
+	query := dao.db.Preload("Media").Where("child_archive_id = ?", childID)
+	
+	// 添加日期筛选条件
+	if startDate != nil {
+		query = query.Where("created_at >= ?", *startDate)
+	}
+	if endDate != nil {
+		query = query.Where("created_at <= ?", *endDate)
+	}
+	
+	err := query.Order("created_at desc").Find(&logs).Error
+	return logs, err
 }

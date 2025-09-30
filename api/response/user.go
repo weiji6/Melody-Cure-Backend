@@ -61,18 +61,21 @@ type VirtualTherapistResponse struct {
 
 // 儿童档案响应
 type ChildArchiveResponse struct {
-	ID          string    `json:"id"`
-	ChildName   string    `json:"child_name"`
-	Gender      string    `json:"gender"`
-	BirthDate   time.Time `json:"birth_date"`
-	Avatar      string    `json:"avatar"`
-	Condition   string    `json:"condition"`
-	Diagnosis   string    `json:"diagnosis"`
-	Treatment   string    `json:"treatment"`
-	Progress    string    `json:"progress"`
-	Notes       string    `json:"notes"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID                 string     `json:"id"`
+	ChildName          string     `json:"child_name"`
+	Gender             string     `json:"gender"`
+	BirthDate          time.Time  `json:"birth_date"`
+	Age                int        `json:"age"` // 计算得出的年龄
+	Avatar             string     `json:"avatar"`
+	Condition          string     `json:"condition"`
+	Diagnosis          string     `json:"diagnosis"`
+	Treatment          string     `json:"treatment"`
+	Progress           string     `json:"progress"`
+	Notes              string     `json:"notes"`
+	TreatmentStartDate *time.Time `json:"treatment_start_date"`
+	HealedDays         int        `json:"healed_days"`
+	CreatedAt          time.Time  `json:"created_at"`
+	UpdatedAt          time.Time  `json:"updated_at"`
 }
 
 // 收藏响应
@@ -134,6 +137,49 @@ func ToUserProfile(user *DAO.User) UserProfile {
 		CreatedAt:     user.CreatedAt,
 		UpdatedAt:     user.UpdatedAt,
 	}
+}
+
+// 转换儿童档案到响应结构体
+func ToChildArchiveResponse(archive *DAO.ChildArchive) ChildArchiveResponse {
+	// 计算年龄
+	age := calculateAge(archive.BirthDate)
+	
+	// 计算已疗愈天数
+	healedDays := archive.HealedDays
+	if archive.TreatmentStartDate != nil {
+		healedDays = int(time.Since(*archive.TreatmentStartDate).Hours() / 24)
+	}
+	
+	return ChildArchiveResponse{
+		ID:                 archive.ID,
+		ChildName:          archive.ChildName,
+		Gender:             archive.Gender,
+		BirthDate:          archive.BirthDate,
+		Age:                age,
+		Avatar:             archive.Avatar,
+		Condition:          archive.Condition,
+		Diagnosis:          archive.Diagnosis,
+		Treatment:          archive.Treatment,
+		Progress:           archive.Progress,
+		Notes:              archive.Notes,
+		TreatmentStartDate: archive.TreatmentStartDate,
+		HealedDays:         healedDays,
+		CreatedAt:          archive.CreatedAt,
+		UpdatedAt:          archive.UpdatedAt,
+	}
+}
+
+// 计算年龄的辅助函数
+func calculateAge(birthDate time.Time) int {
+	now := time.Now()
+	age := now.Year() - birthDate.Year()
+	
+	// 如果还没到生日，年龄减1
+	if now.YearDay() < birthDate.YearDay() {
+		age--
+	}
+	
+	return age
 }
 
 func ToCertificationStatus(cert *DAO.Certification) CertificationStatus {

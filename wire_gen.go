@@ -31,7 +31,11 @@ func InitializeApp() (*App, error) {
 	healingLogDAO := DAO.NewHealingLogDAO(db)
 	healingLogService := service.NewHealingLogService(healingLogDAO)
 	healingLogController := controller.NewHealingLogController(healingLogService)
-	engine := NewEngine(controllerUser, healingLogController, jwtClient)
+	childArchiveController := controller.NewChildArchiveController(user)
+	generatedReportDAO := DAO.NewGeneratedReportDAO(db)
+	aiReportService := service.NewAIReportService(generatedReportDAO, healingLogDAO)
+	aiReportController := controller.NewAIReportController(aiReportService)
+	engine := NewEngine(controllerUser, healingLogController, childArchiveController, aiReportController, jwtClient)
 	app := &App{
 		Engine: engine,
 	}
@@ -44,7 +48,7 @@ type App struct {
 	Engine *gin.Engine
 }
 
-var ProviderSet = wire.NewSet(DAO.NewDB, DAO.NewUserDAO, DAO.NewHealingLogDAO, service.NewUser, service.NewHealingLogService, service.NewImageService, service.NewOtherService, controller.NewUserController, controller.NewHealingLogController, NewJwtClient,
+var ProviderSet = wire.NewSet(DAO.NewDB, DAO.NewUserDAO, DAO.NewHealingLogDAO, DAO.NewGeneratedReportDAO, service.NewUser, service.NewHealingLogService, service.NewImageService, service.NewOtherService, service.NewAIReportService, controller.NewUserController, controller.NewHealingLogController, controller.NewChildArchiveController, controller.NewAIReportController, NewJwtClient,
 	NewEngine, wire.Struct(new(App), "Engine"), wire.Bind(new(service.UserService), new(*service.User)),
 )
 
@@ -55,11 +59,15 @@ func NewJwtClient() *middleware.JwtClient {
 func NewEngine(
 	userController *controller.User,
 	healingLogController *controller.HealingLogController,
+	childArchiveController *controller.ChildArchiveController,
+	aiReportController *controller.AIReportController,
 	jwtClient *middleware.JwtClient,
 ) *gin.Engine {
 	r := gin.Default()
 	routes.SetupUserRoutes(r, userController, jwtClient)
 	routes.SetupHealingLogRoutes(r, healingLogController, jwtClient)
+	routes.SetupChildArchiveRoutes(r, childArchiveController, jwtClient)
+	routes.SetupAIReportRoutes(r, aiReportController, jwtClient)
 
 	return r
 }

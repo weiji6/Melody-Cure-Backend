@@ -23,12 +23,16 @@ var ProviderSet = wire.NewSet(
 	DAO.NewDB,
 	DAO.NewUserDAO,
 	DAO.NewHealingLogDAO,
+	DAO.NewGeneratedReportDAO,
 	service.NewUser,
 	service.NewHealingLogService,
 	service.NewImageService,
 	service.NewOtherService,
+	service.NewAIReportService,
 	controller.NewUserController,
 	controller.NewHealingLogController,
+	controller.NewChildArchiveController,
+	controller.NewAIReportController,
 	NewJwtClient,
 	NewEngine,
 	wire.Struct(new(App), "Engine"),
@@ -42,6 +46,8 @@ func NewJwtClient() *middleware.JwtClient {
 func NewEngine(
 	userController *controller.User,
 	healingLogController *controller.HealingLogController,
+	childArchiveController *controller.ChildArchiveController,
+	aiReportController *controller.AIReportController,
 	jwtClient *middleware.JwtClient,
 ) *gin.Engine {
 	r := gin.Default()
@@ -51,6 +57,12 @@ func NewEngine(
 	
 	// 设置疗愈日志路由
 	routes.SetupHealingLogRoutes(r, healingLogController, jwtClient)
+	
+	// 设置儿童档案路由
+	routes.SetupChildArchiveRoutes(r, childArchiveController, jwtClient)
+	
+	// 设置AI报告路由
+	routes.SetupAIReportRoutes(r, aiReportController, jwtClient)
 	
 	return r
 }

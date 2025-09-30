@@ -3,3 +3,5 @@ config/config.yaml
 .idea
 
 DEPLOY.md
+
+test_ai_report.http

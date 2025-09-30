@@ -46,3 +46,13 @@ qiniu:
   zone: "z0"                        # 存储区域 (z0华东, z1华北, z2华南, na0北美, as0东南亚)
   useHttps: true                    # 是否使用HTTPS
   expires: 3600                     # token过期时间(秒)
+
+# AI API 配置
+ai:
+  provider: "openai"                # AI服务提供商 (openai, claude, gemini等)
+  apiKey: "your_ai_api_key_here"    # AI API密钥 这里暂时不配，就走mock数据
+  baseURL: "https://api.openai.com/v1"  # API基础URL
+  model: "gpt-3.5-turbo"            # 使用的模型
+  maxTokens: 2000                   # 最大token数
+  temperature: 0.7                  # 温度参数，控制输出的随机性
+  timeout: 30                       # 请求超时时间(秒)

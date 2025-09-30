@@ -3,6 +3,7 @@ package service
 import (
 	"melody_cure/DAO"
 	"melody_cure/model"
+	"time"
 )
 
 type HealingLogService struct {
@@ -31,4 +32,9 @@ func (s *HealingLogService) GetHealingLogByID(logID uint) (*model.HealingLog, er
 // DeleteHealingLog 删除疗愈日志
 func (s *HealingLogService) DeleteHealingLog(logID uint) error {
 	return s.healingLogDAO.DeleteHealingLog(logID)
+}
+
+// GetHealingLogsByChildIDWithDateFilter 获取指定儿童的疗愈日志，支持日期筛选
+func (s *HealingLogService) GetHealingLogsByChildIDWithDateFilter(childID uint, startDate, endDate *time.Time) ([]model.HealingLog, error) {
+	return s.healingLogDAO.GetHealingLogsByChildIDWithDateFilter(childID, startDate, endDate)
 }

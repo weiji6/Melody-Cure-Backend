@@ -52,6 +52,7 @@ func AutoMigrate(db *gorm.DB) error {
 		&model.HealingLog{},
 		&model.LogMedia{},
 		&model.ImageToken{},
+		&model.GeneratedReport{},
 	)
 }
 

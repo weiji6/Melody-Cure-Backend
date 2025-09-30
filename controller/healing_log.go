@@ -6,6 +6,7 @@ import (
 	"melody_cure/service"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -54,16 +55,18 @@ func (c *HealingLogController) CreateHealingLog(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response.SuccessResponse{Code: http.StatusOK, Message: "创建成功"})
 }
 
-// GetHealingLogsByChildID 获取指定儿童的所有疗愈日志
-// @Summary 获取儿童疗愈日志列表
-// @Description 获取指定儿童的所有疗愈日志，按时间线排序显示成长进步
+// GetHealingLogsByChildID 根据儿童ID获取疗愈日志
+// @Summary 根据儿童ID获取疗愈日志
+// @Description 获取指定儿童的所有疗愈日志，支持按日期筛选
 // @Tags 疗愈日志
 // @Accept json
 // @Produce json
 // @Security BearerAuth
 // @Param child_id path int true "儿童档案ID"
+// @Param start_date query string false "开始日期 (YYYY-MM-DD)"
+// @Param end_date query string false "结束日期 (YYYY-MM-DD)"
 // @Success 200 {object} object{code=int,data=[]model.HealingLog} "获取成功"
-// @Failure 400 {object} response.ErrorResponse "无效的儿童ID"
+// @Failure 400 {object} response.ErrorResponse "无效的儿童ID或日期格式"
 // @Failure 401 {object} response.ErrorResponse "未认证"
 // @Failure 500 {object} response.ErrorResponse "获取失败"
 // @Router /api/healing-log/child/{child_id} [get]
@@ -75,7 +78,35 @@ func (c *HealingLogController) GetHealingLogsByChildID(ctx *gin.Context) {
 		return
 	}
 
-	logs, err := c.healingLogService.GetHealingLogsByChildID(uint(childID))
+	// 获取日期筛选参数
+	startDateStr := ctx.Query("start_date")
+	endDateStr := ctx.Query("end_date")
+	
+	var startDate, endDate *time.Time
+	
+	// 解析开始日期
+	if startDateStr != "" {
+		if parsed, err := time.Parse("2006-01-02", startDateStr); err != nil {
+			ctx.JSON(http.StatusBadRequest, response.ErrorResponse{Code: http.StatusBadRequest, Message: "开始日期格式错误，请使用 YYYY-MM-DD 格式"})
+			return
+		} else {
+			startDate = &parsed
+		}
+	}
+	
+	// 解析结束日期
+	if endDateStr != "" {
+		if parsed, err := time.Parse("2006-01-02", endDateStr); err != nil {
+			ctx.JSON(http.StatusBadRequest, response.ErrorResponse{Code: http.StatusBadRequest, Message: "结束日期格式错误，请使用 YYYY-MM-DD 格式"})
+			return
+		} else {
+			// 设置为当天的23:59:59
+			endTime := parsed.Add(23*time.Hour + 59*time.Minute + 59*time.Second)
+			endDate = &endTime
+		}
+	}
+
+	logs, err := c.healingLogService.GetHealingLogsByChildIDWithDateFilter(uint(childID), startDate, endDate)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, response.ErrorResponse{Code: http.StatusInternalServerError, Message: "获取失败: " + err.Error()})
 		return

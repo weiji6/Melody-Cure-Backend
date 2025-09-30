@@ -55,15 +55,16 @@ type VirtualTherapistRequest struct {
 }
 
 type ChildArchiveRequest struct {
-	ChildName string    `json:"child_name" binding:"required"`
-	Gender    string    `json:"gender" binding:"required"`
-	BirthDate time.Time `json:"birth_date" binding:"required"`
-	Avatar    string    `json:"avatar"`
-	Condition string    `json:"condition"`
-	Diagnosis string    `json:"diagnosis"`
-	Treatment string    `json:"treatment"`
-	Progress  string    `json:"progress"`
-	Notes     string    `json:"notes"`
+	ChildName          string     `json:"child_name" binding:"required"`
+	Gender             string     `json:"gender" binding:"required"`
+	BirthDate          time.Time  `json:"birth_date" binding:"required"`
+	Avatar             string     `json:"avatar"`
+	Condition          string     `json:"condition"`
+	Diagnosis          string     `json:"diagnosis"`
+	Treatment          string     `json:"treatment"`
+	Progress           string     `json:"progress"`
+	Notes              string     `json:"notes"`
+	TreatmentStartDate *time.Time `json:"treatment_start_date"`
 }
 
 type FavoriteRequest struct {

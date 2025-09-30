@@ -73,21 +73,23 @@ type VirtualTherapist struct {
 
 // 儿童档案
 type ChildArchive struct {
-	ID          string         `gorm:"primaryKey" json:"id"`
-	UserID      string         `gorm:"index" json:"user_id"` // 家长ID
-	ChildName   string         `json:"child_name"`
-	Gender      string         `json:"gender"`
-	BirthDate   time.Time      `json:"birth_date"`
-	Avatar      string         `json:"avatar"`
-	Condition   string         `json:"condition"` // 病情描述
-	Diagnosis   string         `json:"diagnosis"` // 诊断结果
-	Treatment   string         `json:"treatment"` // 治疗方案
-	Progress    string         `json:"progress"` // 康复进展
-	Notes       string         `json:"notes"` // 备注
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
-	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
-	User        User           `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	ID              string         `gorm:"primaryKey" json:"id"`
+	UserID          string         `gorm:"index" json:"user_id"` // 家长ID
+	ChildName       string         `json:"child_name"`
+	Gender          string         `json:"gender"`
+	BirthDate       time.Time      `json:"birth_date"`
+	Avatar          string         `json:"avatar"`
+	Condition       string         `json:"condition"` // 病情描述
+	Diagnosis       string         `json:"diagnosis"` // 诊断结果
+	Treatment       string         `json:"treatment"` // 治疗方案
+	Progress        string         `json:"progress"` // 康复进展
+	Notes           string         `json:"notes"` // 备注
+	TreatmentStartDate *time.Time  `json:"treatment_start_date"` // 治疗开始日期
+	HealedDays      int            `json:"healed_days"` // 已疗愈天数
+	CreatedAt       time.Time      `json:"created_at"`
+	UpdatedAt       time.Time      `json:"updated_at"`
+	DeletedAt       gorm.DeletedAt `gorm:"index" json:"-"`
+	User            User           `gorm:"foreignKey:UserID" json:"user,omitempty"`
 }
 
 // 课程

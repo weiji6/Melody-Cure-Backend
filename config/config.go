@@ -12,6 +12,7 @@ type Config struct {
 	JWT      JWTConfig
 	Email    EmailConfig
 	Qiniu    QiniuConfig
+	AI       AIConfig
 }
 
 type DatabaseConfig struct {
@@ -51,6 +52,16 @@ type QiniuConfig struct {
 	Expires   int64  `mapstructure:"expires"`
 }
 
+type AIConfig struct {
+	Provider    string  `mapstructure:"provider"`
+	APIKey      string  `mapstructure:"apiKey"`
+	BaseURL     string  `mapstructure:"baseURL"`
+	Model       string  `mapstructure:"model"`
+	MaxTokens   int     `mapstructure:"maxTokens"`
+	Temperature float64 `mapstructure:"temperature"`
+	Timeout     int     `mapstructure:"timeout"`
+}
+
 var GlobalConfig Config
 
 func InitConfig() {
@@ -85,6 +96,14 @@ func InitConfig() {
 	
 	viper.BindEnv("email.email", "EMAIL_USERNAME")
 	viper.BindEnv("email.key", "EMAIL_PASSWORD")
+	
+	viper.BindEnv("ai.provider", "AI_PROVIDER")
+	viper.BindEnv("ai.apiKey", "AI_API_KEY")
+	viper.BindEnv("ai.baseURL", "AI_BASE_URL")
+	viper.BindEnv("ai.model", "AI_MODEL")
+	viper.BindEnv("ai.maxTokens", "AI_MAX_TOKENS")
+	viper.BindEnv("ai.temperature", "AI_TEMPERATURE")
+	viper.BindEnv("ai.timeout", "AI_TIMEOUT")
 	
 	// 设置默认值
 	setDefaults()
@@ -131,6 +150,14 @@ func setDefaults() {
 	// 邮箱默认配置
 	viper.SetDefault("email.host", "smtp.gmail.com")
 	viper.SetDefault("email.port", 587)
+	
+	// AI默认配置
+	viper.SetDefault("ai.provider", "openai")
+	viper.SetDefault("ai.baseURL", "https://api.openai.com/v1")
+	viper.SetDefault("ai.model", "gpt-3.5-turbo")
+	viper.SetDefault("ai.maxTokens", 2000)
+	viper.SetDefault("ai.temperature", 0.7)
+	viper.SetDefault("ai.timeout", 30)
 }
 
 // GetConfig 获取全局配置
@@ -161,4 +188,9 @@ func GetEmailConfig() EmailConfig {
 // GetQiniuConfig 获取七牛云配置
 func GetQiniuConfig() QiniuConfig {
 	return GlobalConfig.Qiniu
+}
+
+// GetAIConfig 获取AI配置
+func GetAIConfig() AIConfig {
+	return GlobalConfig.AI
 }

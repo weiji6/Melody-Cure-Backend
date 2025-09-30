@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"crypto/rand"
 	"encoding/hex"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -293,18 +294,26 @@ func (u *User) GetVirtualTherapists(userID string) ([]DAO.VirtualTherapist, erro
 
 // 创建儿童档案
 func (u *User) CreateChildArchive(userID string, req *request.ChildArchiveRequest) (*DAO.ChildArchive, error) {
+	// 计算已疗愈天数
+	healedDays := 0
+	if req.TreatmentStartDate != nil {
+		healedDays = int(time.Since(*req.TreatmentStartDate).Hours() / 24)
+	}
+	
 	// 构建儿童档案数据
 	archive := &DAO.ChildArchive{
-		UserID:    userID,
-		ChildName: req.ChildName,
-		Gender:    req.Gender,
-		BirthDate: req.BirthDate,
-		Avatar:    req.Avatar,
-		Condition: req.Condition,
-		Diagnosis: req.Diagnosis,
-		Treatment: req.Treatment,
-		Progress:  req.Progress,
-		Notes:     req.Notes,
+		UserID:             userID,
+		ChildName:          req.ChildName,
+		Gender:             req.Gender,
+		BirthDate:          req.BirthDate,
+		Avatar:             req.Avatar,
+		Condition:          req.Condition,
+		Diagnosis:          req.Diagnosis,
+		Treatment:          req.Treatment,
+		Progress:           req.Progress,
+		Notes:              req.Notes,
+		TreatmentStartDate: req.TreatmentStartDate,
+		HealedDays:         healedDays,
 	}
 	
 	// 调用DAO层创建儿童档案
@@ -323,19 +332,27 @@ func (u *User) GetChildArchives(userID string) ([]DAO.ChildArchive, error) {
 
 // 更新儿童档案
 func (u *User) UpdateChildArchive(userID string, archiveID string, req *request.ChildArchiveRequest) error {
+	// 计算已疗愈天数
+	healedDays := 0
+	if req.TreatmentStartDate != nil {
+		healedDays = int(time.Since(*req.TreatmentStartDate).Hours() / 24)
+	}
+	
 	// 构建更新数据
 	archive := &DAO.ChildArchive{
-		ID:        archiveID,
-		UserID:    userID,
-		ChildName: req.ChildName,
-		Gender:    req.Gender,
-		BirthDate: req.BirthDate,
-		Avatar:    req.Avatar,
-		Condition: req.Condition,
-		Diagnosis: req.Diagnosis,
-		Treatment: req.Treatment,
-		Progress:  req.Progress,
-		Notes:     req.Notes,
+		ID:                 archiveID,
+		UserID:             userID,
+		ChildName:          req.ChildName,
+		Gender:             req.Gender,
+		BirthDate:          req.BirthDate,
+		Avatar:             req.Avatar,
+		Condition:          req.Condition,
+		Diagnosis:          req.Diagnosis,
+		Treatment:          req.Treatment,
+		Progress:           req.Progress,
+		Notes:              req.Notes,
+		TreatmentStartDate: req.TreatmentStartDate,
+		HealedDays:         healedDays,
 	}
 	
 	return u.dao.UpdateChildArchive(archive)

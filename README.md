@@ -38,6 +38,7 @@ Melody Cure 是一个专为儿童康复治疗设计的综合性平台，提供AI
 ## 功能特性
 
 ### 🔐 用户管理系统
+
 - 用户注册/登录
 - JWT认证机制
 - 个人信息管理
@@ -45,43 +46,51 @@ Melody Cure 是一个专为儿童康复治疗设计的综合性平台，提供AI
 - 专业认证申请（机构认证/康复师认证）
 
 ### 🤖 AI陪伴功能
+
 - 创建个性化AI陪伴角色
 - 多种陪伴类型选择
 - 个性化设定和语音类型
 
 ### 👨‍⚕️ 虚拟疗愈导师
+
 - 创建专业虚拟疗愈导师
 - 专业领域分类
 - 经验等级设定
 
 ### 👶 儿童档案管理
+
 - 完整的儿童档案创建
 - 病情诊断记录
 - 治疗方案管理
 - 康复进度跟踪
 
 ### 📝 疗愈日志系统
+
 - 记录儿童成长进步
 - 疗愈前后对比（文字、照片等）
 - 时间线浏览功能
 - 媒体文件管理（图片、视频）
 
 ### ⭐ 收藏管理
+
 - 课程收藏
 - 游戏收藏
 - 文章收藏
 
 ### 📚 内容管理
+
 - 课程列表和详情
 - 游戏列表和详情
 
 ### 🖼️ 图床服务
+
 - 七牛云图片上传
 - 安全的上传Token获取
 
 ## 快速开始
 
 ### 前置要求
+
 - Docker (20.10+)
 - Docker Compose (2.0+)
 - Git
@@ -89,12 +98,14 @@ Melody Cure 是一个专为儿童康复治疗设计的综合性平台，提供AI
 ### 一键部署
 
 1. **克隆项目**
+
 ```bash
 git clone https://github.com/your-username/Melody-Cure-Backend.git
 cd Melody-Cure-Backend
 ```
 
 2. **配置环境**
+
 ```bash
 # 复制配置文件
 cp config/example.yaml config/config.yaml
@@ -104,11 +115,13 @@ nano config/config.yaml
 ```
 
 3. **启动服务**
+
 ```bash
 docker-compose up -d
 ```
 
 4. **验证部署**
+
 ```bash
 # 检查服务状态
 docker-compose ps
@@ -160,7 +173,29 @@ redis:
 jwt:
   secret: your_jwt_secret
   expire: 24h
+
+# AI API配置
+ai:
+  provider: "openai"                    # AI服务提供商 (openai, claude, gemini等)
+  apiKey: "your_ai_api_key_here"        # AI API密钥
+  baseURL: "https://api.openai.com/v1"  # API基础URL
+  model: "gpt-3.5-turbo"                # 使用的模型
+  maxTokens: 2000                       # 最大token数
+  temperature: 0.7                      # 温度参数 (0.0-1.0)
+  timeout: 30                           # 请求超时时间(秒)
 ```
+
+#### AI配置说明
+
+- **provider**: AI服务提供商，支持 openai、claude、gemini 等
+- **apiKey**: AI API密钥，从对应服务商获取
+- **baseURL**: API基础URL，不同服务商的URL不同
+- **model**: 使用的AI模型，如 gpt-3.5-turbo、gpt-4 等
+- **maxTokens**: 单次请求的最大token数量
+- **temperature**: 控制生成内容的随机性，0.0最保守，1.0最随机
+- **timeout**: API请求超时时间
+
+> **注意**: 如果不配置AI API密钥或使用默认值，系统将使用模拟数据进行AI功能演示。
 
 ### 运行项目
 
@@ -489,6 +524,52 @@ Authorization: Bearer <your_jwt_token>
 - **需要认证**: 是
 - **参数**: `log_id` - 日志ID
 
+### AI报告功能
+
+#### 生成AI报告
+
+- **POST** `/api/ai-reports/generate`
+- **描述**: 基于儿童疗愈日志生成AI分析报告
+- **需要认证**: 是
+- **请求体**:
+
+```json
+{
+  "child_archive_id": 1,
+  "report_type": "daily_summary",
+  "start_date": "2024-01-01",
+  "end_date": "2024-01-31"
+}
+```
+
+- **报告类型**:
+  - `daily_summary`: 日常总结报告
+  - `suggestions`: 康复建议报告
+  - `progress`: 进度分析报告
+
+#### 获取AI报告
+
+- **GET** `/api/ai-reports`
+- **描述**: 获取指定儿童的AI报告
+- **需要认证**: 是
+- **查询参数**:
+  - `child_archive_id`: 儿童档案ID
+  - `report_type`: 报告类型
+
+#### 更新AI报告内容
+
+- **PUT** `/api/ai-reports/:id`
+- **描述**: 用户可以编辑和修改AI生成的报告内容
+- **需要认证**: 是
+- **参数**: `id` - 报告ID
+- **请求体**:
+
+```json
+{
+  "content": "用户编辑后的报告内容"
+}
+```
+
 ## 响应格式
 
 ### 成功响应
@@ -597,6 +678,7 @@ db.AutoMigrate(
 ## 部署
 
 ### 环境要求
+
 - Go 1.21+
 - MySQL 8.0+
 - Redis 6.0+
@@ -609,6 +691,7 @@ db.AutoMigrate(
 如果你的服务器已经安装了 MySQL 和 Redis，可以使用以下方式部署：
 
 **方式一：使用 host 网络模式 (推荐)**
+
 ```bash
 # 使用简化版配置，直接访问宿主机服务
 docker-compose -f docker-compose.simple.yml up -d
@@ -621,6 +704,7 @@ docker-compose -f docker-compose.simple.yml logs -f backend
 ```
 
 **方式二：使用桥接网络模式**
+
 ```bash
 # 修改 docker-compose.yml 中的数据库和Redis连接配置
 # 将 DB_HOST 和 REDIS_HOST 改为服务器的实际IP地址
@@ -628,32 +712,39 @@ docker-compose up -d
 ```
 
 #### 开发环境部署 (包含所有服务)
+
 如果需要完整的开发环境，包括 MySQL 和 Redis 容器：
 
 1. 克隆项目
+
 ```bash
 git clone <repository-url>
 cd Melody-Cure-Backend
 ```
 
 2. 使用完整版配置启动
+
 ```bash
 # 恢复 MySQL 和 Redis 容器配置后使用
 # docker-compose up -d
 ```
 
 3. 访问服务
+
 - API 服务: http://localhost:8080
 - Swagger 文档: http://localhost:8080/swagger/index.html
 
 #### 生产环境部署
+
 1. 配置环境变量
+
 ```bash
 cp .env.example .env
 # 编辑 .env 文件，配置生产环境的密码和密钥
 ```
 
 2. 启动生产环境
+
 ```bash
 # 使用生产环境配置启动
 docker-compose -f docker-compose.prod.yml up -d
@@ -663,6 +754,7 @@ docker-compose -f docker-compose.prod.yml ps
 ```
 
 3. SSL 配置 (可选)
+
 ```bash
 # 将 SSL 证书放入 ssl 目录
 mkdir ssl
@@ -677,29 +769,35 @@ docker-compose -f docker-compose.prod.yml restart nginx
 ### 传统部署
 
 #### 部署步骤
+
 1. 克隆项目
+
 ```bash
 git clone <repository-url>
 cd Melody-Cure-Backend
 ```
 
 2. 配置环境变量
+
 ```bash
 cp config/example.yaml config/config.yaml
 # 编辑 config/config.yaml 文件，配置数据库、Redis、JWT等信息
 ```
 
 3. 安装依赖
+
 ```bash
 go mod download
 ```
 
 4. 运行数据库迁移
+
 ```bash
 go run main.go
 ```
 
 5. 启动服务
+
 ```bash
 go run main.go
 ```
@@ -707,6 +805,7 @@ go run main.go
 ### Docker 命令参考
 
 #### 使用服务器现有 MySQL/Redis 的命令
+
 ```bash
 # 使用简化版配置 (推荐)
 docker-compose -f docker-compose.simple.yml up -d
@@ -722,6 +821,7 @@ docker-compose restart backend
 ```
 
 #### 生产环境命令
+
 ```bash
 # 生产环境部署
 docker-compose -f docker-compose.prod.yml up -d
@@ -731,6 +831,7 @@ docker-compose -f docker-compose.prod.yml restart nginx
 ```
 
 #### 通用命令
+
 ```bash
 # 构建镜像
 docker-compose build
@@ -750,6 +851,7 @@ docker images
 由于使用服务器现有的 MySQL 和 Redis，需要手动准备数据库：
 
 #### MySQL 数据库设置
+
 ```sql
 -- 连接到 MySQL
 mysql -u root -p
@@ -767,6 +869,7 @@ SET time_zone = '+08:00';
 ```
 
 #### Redis 设置
+
 确保 Redis 服务正在运行，并且如果设置了密码，请在环境变量中正确配置。
 
 ```bash
@@ -804,6 +907,13 @@ CMD ["./main"]
 - `REDIS_HOST` - Redis主机
 - `REDIS_PORT` - Redis端口
 - `JWT_SECRET` - JWT密钥
+- `AI_PROVIDER` - AI服务提供商
+- `AI_API_KEY` - AI API密钥
+- `AI_BASE_URL` - AI API基础URL
+- `AI_MODEL` - AI模型名称
+- `AI_MAX_TOKENS` - AI最大token数
+- `AI_TEMPERATURE` - AI温度参数
+- `AI_TIMEOUT` - AI请求超时时间
 
 ## 贡献指南
 
@@ -812,14 +922,3 @@ CMD ["./main"]
 3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 打开 Pull Request
-
-## 许可证
-
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
-
-## 联系方式
-
-如有问题或建议，请通过以下方式联系：
-
-- 项目地址: [https://github.com/your-username/Melody-Cure-Backend](https://github.com/your-username/Melody-Cure-Backend)
-- 问题反馈: [Issues](https://github.com/your-username/Melody-Cure-Backend/issues)
