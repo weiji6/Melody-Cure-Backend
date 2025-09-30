@@ -81,6 +81,49 @@ Melody Cure 是一个专为儿童康复治疗设计的综合性平台，提供AI
 
 ## 快速开始
 
+### 前置要求
+- Docker (20.10+)
+- Docker Compose (2.0+)
+- Git
+
+### 一键部署
+
+1. **克隆项目**
+```bash
+git clone https://github.com/your-username/Melody-Cure-Backend.git
+cd Melody-Cure-Backend
+```
+
+2. **配置环境**
+```bash
+# 复制配置文件
+cp config/example.yaml config/config.yaml
+
+# 编辑配置文件（必须修改数据库密码、JWT密钥等）
+nano config/config.yaml
+```
+
+3. **启动服务**
+```bash
+docker-compose up -d
+```
+
+4. **验证部署**
+```bash
+# 检查服务状态
+docker-compose ps
+
+# 健康检查
+curl http://localhost/health
+
+# 访问 API 文档
+# 浏览器打开: http://localhost/swagger/index.html
+```
+
+详细部署指南请参考 [DEPLOY.md](DEPLOY.md)
+
+## 开发环境
+
 ### 环境要求
 
 - Go 1.24.4+

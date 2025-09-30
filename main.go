@@ -7,10 +7,22 @@ import (
 )
 
 func main() {
-
 	config.InitConfig()
 
-	DAO.NewData()
+	// 初始化数据库连接和全局变量
+	db, err := DAO.NewDB()
+	if err != nil {
+		panic("数据库连接失败: " + err.Error())
+	}
+	DAO.DB = db
+
+	// 自动迁移数据库表
+	if err := DAO.AutoMigrate(db); err != nil {
+		panic("数据库迁移失败: " + err.Error())
+	}
+
+	// 初始化Redis连接
+	DAO.RDB = DAO.NewRedis()
 
 	app, err := InitializeApp()
 	if err != nil {

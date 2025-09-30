@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -19,7 +18,7 @@ var (
 	RDB *redis.Client
 )
 
-func NewData() {
+func NewData() (*gorm.DB, *redis.Client) {
 	config.InitConfig()
 
 	db, err := NewDB()
@@ -33,7 +32,10 @@ func NewData() {
 		panic("数据库迁移失败: " + err.Error())
 	}
 
-	RDB = NewRedis()
+	rdb := NewRedis()
+	RDB = rdb
+	
+	return db, rdb
 }
 
 // AutoMigrate 自动迁移数据库表
@@ -47,25 +49,19 @@ func AutoMigrate(db *gorm.DB) error {
 		&UserFavorite{},
 		&Course{},
 		&Game{},
-		&model.ImageToken{}, // 图床token表
-		&model.HealingLog{}, // 疗愈日志表
-		&model.LogMedia{},   // 日志媒体表
+		&model.HealingLog{},
+		&model.LogMedia{},
+		&model.ImageToken{},
 	)
 }
 
 func NewDB() (*gorm.DB, error) {
-	host := viper.GetString("db.host")
-	port := viper.GetString("db.port")
-	user := viper.GetString("db.username")
-	pass := viper.GetString("db.password")
-	name := viper.GetString("db.dbname")
-	charset := viper.GetString("db.charset")
-	parseTime := viper.GetString("db.parseTime")
-	loc := viper.GetString("db.loc")
-
+	dbConfig := config.GetDatabaseConfig()
+	
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=%s&loc=%s",
-		user, pass, host, port, name, charset, parseTime, loc,
+		dbConfig.Username, dbConfig.Password, dbConfig.Host, dbConfig.Port, 
+		dbConfig.DBName, dbConfig.Charset, dbConfig.ParseTime, dbConfig.Loc,
 	)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -84,12 +80,14 @@ func NewDB() (*gorm.DB, error) {
 }
 
 func NewRedis() *redis.Client {
-	addr := fmt.Sprintf("%s:%s", viper.GetString("redis.host"), viper.GetString("redis.port"))
+	redisConfig := config.GetRedisConfig()
+	
+	addr := fmt.Sprintf("%s:%s", redisConfig.Host, redisConfig.Port)
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     addr,
-		Password: viper.GetString("redis.password"),
-		DB:       viper.GetInt("redis.db"),
+		Password: redisConfig.Password,
+		DB:       redisConfig.DB,
 	})
 
 	// 启动时校验连接

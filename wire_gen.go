@@ -8,8 +8,9 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
+	"github.com/google/wire"
 	"melody_cure/DAO"
+	"melody_cure/config"
 	"melody_cure/controller"
 	"melody_cure/middleware"
 	"melody_cure/routes"
@@ -19,15 +20,18 @@ import (
 // Injectors from wire.go:
 
 func InitializeApp() (*App, error) {
-	jwtClient := ProvideJwtClient()
-	userService := ProvideUserService(jwtClient)
-	user := ProvideUserController(userService)
-	imageService := ProvideImageService()
-	imageController := ProvideImageController(imageService)
-	healingLogDAO := ProvideHealingLogDAO()
-	healingLogService := ProvideHealingLogService(healingLogDAO)
-	healingLogController := ProvideHealingLogController(healingLogService)
-	engine := ProvideEngine(user, imageController, healingLogController, jwtClient)
+	db, err := DAO.NewDB()
+	if err != nil {
+		return nil, err
+	}
+	userDAO := DAO.NewUserDAO(db)
+	jwtClient := NewJwtClient()
+	user := service.NewUser(userDAO, jwtClient)
+	controllerUser := controller.NewUserController(user)
+	healingLogDAO := DAO.NewHealingLogDAO(db)
+	healingLogService := service.NewHealingLogService(healingLogDAO)
+	healingLogController := controller.NewHealingLogController(healingLogService)
+	engine := NewEngine(controllerUser, healingLogController, jwtClient)
 	app := &App{
 		Engine: engine,
 	}
@@ -40,43 +44,22 @@ type App struct {
 	Engine *gin.Engine
 }
 
-func ProvideJwtClient() *middleware.JwtClient {
-	return &middleware.JwtClient{SecretKey: viper.GetString("JWT.secretKey")}
+var ProviderSet = wire.NewSet(DAO.NewDB, DAO.NewUserDAO, DAO.NewHealingLogDAO, service.NewUser, service.NewHealingLogService, service.NewImageService, service.NewOtherService, controller.NewUserController, controller.NewHealingLogController, NewJwtClient,
+	NewEngine, wire.Struct(new(App), "Engine"), wire.Bind(new(service.UserService), new(*service.User)),
+)
+
+func NewJwtClient() *middleware.JwtClient {
+	return &middleware.JwtClient{SecretKey: config.GetJWTConfig().SecretKey}
 }
 
-func ProvideUserService(jwt *middleware.JwtClient) service.UserService {
-	return service.NewUser(DAO.NewUserDAO(DAO.DB), jwt)
-}
-
-func ProvideUserController(svc service.UserService) *controller.User {
-	return controller.NewUserController(svc)
-}
-
-func ProvideImageService() *service.ImageService {
-	return service.NewImageService()
-}
-
-func ProvideImageController(imageService *service.ImageService) *controller.ImageController {
-	return controller.NewImageController(imageService)
-}
-
-func ProvideHealingLogDAO() *DAO.HealingLogDAO {
-	return DAO.NewHealingLogDAO(DAO.DB)
-}
-
-func ProvideHealingLogService(healingLogDAO *DAO.HealingLogDAO) *service.HealingLogService {
-	return service.NewHealingLogService(healingLogDAO)
-}
-
-func ProvideHealingLogController(healingLogService *service.HealingLogService) *controller.HealingLogController {
-	return controller.NewHealingLogController(healingLogService)
-}
-
-func ProvideEngine(uc *controller.User, ic *controller.ImageController, hlc *controller.HealingLogController, jwt *middleware.JwtClient) *gin.Engine {
+func NewEngine(
+	userController *controller.User,
+	healingLogController *controller.HealingLogController,
+	jwtClient *middleware.JwtClient,
+) *gin.Engine {
 	r := gin.Default()
-	routes.SetupUserRoutes(r, uc, jwt)
-	routes.SetupImageRoutes(r, ic, jwt)
-	routes.SetupHealingLogRoutes(r, hlc, jwt)
+	routes.SetupUserRoutes(r, userController, jwtClient)
+	routes.SetupHealingLogRoutes(r, healingLogController, jwtClient)
 
 	return r
 }
