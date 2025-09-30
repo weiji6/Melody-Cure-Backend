@@ -15,6 +15,126 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/child-archive": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取当前用户的所有儿童档案列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "儿童档案"
+                ],
+                "summary": "获取儿童档案列表",
+                "responses": {
+                    "200": {
+                        "description": "获取成功",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "code": {
+                                    "type": "integer"
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/response.ChildArchiveResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "未认证",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "获取失败",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/child-archive/{archive_id}/profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取儿童的个人信息，包括照片、姓名、年龄、性别、诊断结果、已疗愈天数等",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "儿童档案"
+                ],
+                "summary": "获取儿童个人信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "儿童档案ID",
+                        "name": "archive_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "获取成功",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "code": {
+                                    "type": "integer"
+                                },
+                                "data": {
+                                    "$ref": "#/definitions/response.ChildArchiveResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "未认证",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "档案不存在",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "获取失败",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/course/{id}": {
             "get": {
                 "description": "根据ID获取课程详情",
@@ -279,7 +399,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "获取指定儿童的所有疗愈日志，按时间线排序显示成长进步",
+                "description": "获取指定儿童的所有疗愈日志，支持按日期筛选",
                 "consumes": [
                     "application/json"
                 ],
@@ -289,7 +409,7 @@ const docTemplate = `{
                 "tags": [
                     "疗愈日志"
                 ],
-                "summary": "获取儿童疗愈日志列表",
+                "summary": "根据儿童ID获取疗愈日志",
                 "parameters": [
                     {
                         "type": "integer",
@@ -297,6 +417,18 @@ const docTemplate = `{
                         "name": "child_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期 (YYYY-MM-DD)",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期 (YYYY-MM-DD)",
+                        "name": "end_date",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -318,7 +450,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "无效的儿童ID",
+                        "description": "无效的儿童ID或日期格式",
                         "schema": {
                             "$ref": "#/definitions/response.ErrorResponse"
                         }
@@ -1698,6 +1830,10 @@ const docTemplate = `{
                 "gender": {
                     "type": "string"
                 },
+                "healed_days": {
+                    "description": "已疗愈天数",
+                    "type": "integer"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1711,6 +1847,10 @@ const docTemplate = `{
                 },
                 "treatment": {
                     "description": "治疗方案",
+                    "type": "string"
+                },
+                "treatment_start_date": {
+                    "description": "治疗开始日期",
                     "type": "string"
                 },
                 "updated_at": {
@@ -2031,6 +2171,9 @@ const docTemplate = `{
                 },
                 "treatment": {
                     "type": "string"
+                },
+                "treatment_start_date": {
+                    "type": "string"
                 }
             }
         },
@@ -2127,6 +2270,57 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "therapist_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ChildArchiveResponse": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "description": "计算得出的年龄",
+                    "type": "integer"
+                },
+                "avatar": {
+                    "type": "string"
+                },
+                "birth_date": {
+                    "type": "string"
+                },
+                "child_name": {
+                    "type": "string"
+                },
+                "condition": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "diagnosis": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "healed_days": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "progress": {
+                    "type": "string"
+                },
+                "treatment": {
+                    "type": "string"
+                },
+                "treatment_start_date": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
